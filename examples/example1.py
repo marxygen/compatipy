@@ -1,2 +1,3 @@
 def ten():
-    return 'Fuck you'
+    print 'Im printing this'
+    return 'And returning this'
