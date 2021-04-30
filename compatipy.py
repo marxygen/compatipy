@@ -5,16 +5,24 @@ class PortingException(BaseException):
     ...
 
 class Compatible:
-    def __init__(self, definition, *, args=(None,), old_version='2.7', command='python'):
-        self.module, self.method = definition.split('.')
+    def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python'):
+        self.path = path 
+        self.module, self.method = *definition.split('.')[:-1], definition.split('.')[-1]
         self.old_version = old_version
         self.command = command
 
         if not isinstance(args, tuple):
             raise PortingException(f'Arguments must be passed in as a tuple, not as {type(args)}')
 
+        self.__check_file()
         self.__check_availabilty()
         self.__check_runcommand()
+
+    def __check_file(self):
+        """Checks that the module user requested exists"""
+        print(self.path)
+        if not os.path.exists(os.path.join(self.path, self.module+'.py')):
+            raise PortingException(f'Module {os.path.join(self.path, self.module+".py")} cannot be accessed')
 
     def __check_availabilty(self):
         """Checks if the requested old_version is installed and available in PATH"""
@@ -41,8 +49,7 @@ class Compatible:
 
     def __call__(self):
         """Called when the function is referenced as f()"""
-        path = os.path.dirname(__file__)
-        py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
-        module_dir = os.path.join(path, self.module) + '.py'
+        py2dir = os.path.join(self.path, 'py2.py')
+        module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
         print(result)
