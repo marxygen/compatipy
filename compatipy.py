@@ -43,6 +43,16 @@ class Compatible:
             raise PortingException(f'Python {self.old_version} is not added to PATH. Porting is not available')
 
     def __execute(self, cmd):
+        """Executes given command in subprocess and returns output or error text if the latter is present
+
+        Args:
+            cmd (str): Command to be executed
+
+        Raises:
+            PortingException: Occurrs if the script was denied access to some resource (e.g. python executable)
+        Returns:
+            str: Output or error text resulting from command execution
+        """
         cmd = cmd.split(' ')
         try:
             output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -58,10 +68,32 @@ class Compatible:
         if not self.old_version in result:
             raise PortingException(f'Cannot run Python {self.old_version} via "{self.command}" command. Specify another command via "command" option on init')
 
-    def __call__(self):
-        """Called when the function is referenced as f()"""
+    def __runfunc(self):
         py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
         module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
-        object = eval(result)
-        print(object)
+        return eval(result)
+
+    def __call__(self):
+        """Returns what the function returned when it was executed (Ah, yes, the tautology)"""
+        result = self.__runfunc()
+        return result['result']
+
+    @property
+    def output(self):
+        """Returns what the function printed out during its execution
+
+        Returns:
+            list: The list containing objects the function printed out during execution using print or sys.stdout
+        """
+        result = self.__runfunc()
+        return result['output']
+
+    @property
+    def all(self):
+        """Returns everything the function printed and returned
+
+        Returns:
+            dict: The dictionary with output and retured values of the function
+        """
+        return self.__runfunc()
