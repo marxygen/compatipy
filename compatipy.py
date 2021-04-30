@@ -6,6 +6,18 @@ class PortingException(BaseException):
 
 class Compatible:
     def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python'):
+        """A class that tries to execute Python 2 code in a separate process (via subprocess) and capture the result and output
+
+        Args:
+            definition (str): Method of a module to be executed. Use the format: module.method
+            args (tuple, optional): Arguments to be provided for the method. Defaults to (None,).
+            path (str, optional): If the module to be executed is located in another directory, specify it. Make sure you use absolute path. Defaults to os.path.dirname(__file__).
+            old_version (str, optional): What version of Python to use to run code for Python 2. Defaults to '2.7'.
+            command (str, optional): What command to use to run code. Better leave alone. Defaults to 'python'.
+
+        Raises:
+            PortingException: An exception if the script was unable to run the code due to some errors
+        """
         self.path = path 
         self.module, self.method = *definition.split('.')[:-1], definition.split('.')[-1]
         self.old_version = old_version
