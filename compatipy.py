@@ -49,7 +49,7 @@ class Compatible:
 
     def __call__(self):
         """Called when the function is referenced as f()"""
-        py2dir = os.path.join(self.path, 'py2.py')
+        py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
         module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
         print(result)
