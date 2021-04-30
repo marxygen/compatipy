@@ -20,7 +20,6 @@ class Compatible:
 
     def __check_file(self):
         """Checks that the module user requested exists"""
-        print(self.path)
         if not os.path.exists(os.path.join(self.path, self.module+'.py')):
             raise PortingException(f'Module {os.path.join(self.path, self.module+".py")} cannot be accessed')
 
@@ -36,7 +35,7 @@ class Compatible:
         try:
             output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             result =  output.stdout or output.stderr
-            return repr(result)
+            return result.decode('UTF-8')
         except PermissionError:
             raise PortingException('Couldn\'t execute a command due to insufficient privileges. Make sure this script has admin access')
 
@@ -52,4 +51,5 @@ class Compatible:
         py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
         module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
-        print(result)
+        object = eval(result)
+        print(object)
