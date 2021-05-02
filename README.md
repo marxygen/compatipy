@@ -73,7 +73,7 @@ func.all
 Output:
 
 ```IDLE
->>> {'result': 'This is something I return', 'output': ['This is the output']}
+>>> {'result': 'This is something I return', 'output': ['This is the output'], 'exceptions': []}
 ```
 
 ## Handling exceptions
