@@ -5,7 +5,7 @@ class PortingException(BaseException):
     ...
 
 class Compatible:
-    def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python', print=True):
+    def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python', prnt=True, raise_exceptions=True):
         """A class that tries to execute Python 2 code in a separate process (via subprocess) and capture the result and output
 
         Args:
@@ -14,8 +14,8 @@ class Compatible:
             path (str, optional): If the module to be executed is located in another directory, specify it. Make sure you use absolute path. Defaults to os.path.dirname(__file__).
             old_version (str, optional): What version of Python to use to run code for Python 2. Defaults to '2.7'.
             command (str, optional): What command to use to run code. Better leave alone. Defaults to 'python'.
-            print (bool, optional): Defines if what the function prints must be printed out during its execution. Defaults to True
-
+            prnt (bool, optional): Defines if what the function prints must be printed out during its execution. Defaults to True
+            raise_exceptions (bool, optional): Defines if the occurring exceptions will be raised in Python 3 script. Defaults to True
         Raises:
             PortingException: An exception if the script was unable to run the code due to some errors
         """
@@ -23,7 +23,8 @@ class Compatible:
         self.module, self.method = *definition.split('.')[:-1], definition.split('.')[-1]
         self.old_version = old_version
         self.command = command
-        self.print = print
+        self.print = prnt
+        self.raise_exceptions = raise_exceptions
 
         if not isinstance(args, tuple):
             raise PortingException(f'Arguments must be passed in as a tuple, not as {type(args)}')
@@ -75,7 +76,10 @@ class Compatible:
         module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
         try:
-            return eval(result)
+            result = eval(result)
+            if result.get('exceptions') and self.raise_exceptions:
+                raise result.get('exceptions')[0]
+            return result
         except SyntaxError:
             raise PortingException('A SyntaxError occurred during file execution. It might be due to invalid file formatting (e.g. it\'s empty)')
 
