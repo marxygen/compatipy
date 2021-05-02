@@ -37,7 +37,7 @@ What will happen? Does the code break? I hope not. In fact, this is the output:
 ```
 
 Nice. So the code got executed even though it contains clearly Python-3-invalid `print` statement.
-Note that we see not only what the function returned but also what it printed out. You can overwrite that by passing `print=False` when instantiating `Compatible`.<br>
+Note that we see not only what the function returned but also what it printed out. You can overwrite that by passing `prnt=False` when instantiating `Compatible`.<br>
 If we want to access what the function printed out separately, there is a property for that:
 
 ```Python
@@ -75,3 +75,7 @@ Output:
 ```IDLE
 >>> {'result': 'This is something I return', 'output': ['This is the output']}
 ```
+
+## Handling exceptions
+
+If some exception was raised during Python 2 script execution, if will be raised when you call this function. You can change this behavior by passing `raise_exceptions=False`
