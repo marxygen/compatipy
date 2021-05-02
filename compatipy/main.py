@@ -5,7 +5,7 @@ class PortingException(BaseException):
     ...
 
 class Compatible:
-    def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python'):
+    def __init__(self, definition, *, args=(None,), path=os.path.dirname(__file__), old_version='2.7', command='python', print=True):
         """A class that tries to execute Python 2 code in a separate process (via subprocess) and capture the result and output
 
         Args:
@@ -14,6 +14,7 @@ class Compatible:
             path (str, optional): If the module to be executed is located in another directory, specify it. Make sure you use absolute path. Defaults to os.path.dirname(__file__).
             old_version (str, optional): What version of Python to use to run code for Python 2. Defaults to '2.7'.
             command (str, optional): What command to use to run code. Better leave alone. Defaults to 'python'.
+            print (bool, optional): Defines if what the function prints must be printed out during its execution. Defaults to True
 
         Raises:
             PortingException: An exception if the script was unable to run the code due to some errors
@@ -22,6 +23,7 @@ class Compatible:
         self.module, self.method = *definition.split('.')[:-1], definition.split('.')[-1]
         self.old_version = old_version
         self.command = command
+        self.print = print
 
         if not isinstance(args, tuple):
             raise PortingException(f'Arguments must be passed in as a tuple, not as {type(args)}')
@@ -72,11 +74,16 @@ class Compatible:
         py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
         module_dir = os.path.join(self.path, self.module) + '.py'
         result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
-        return eval(result)
+        try:
+            return eval(result)
+        except SyntaxError:
+            raise PortingException('A SyntaxError occurred during file execution. It might be due to invalid file formatting (e.g. it\'s empty)')
 
     def __call__(self):
         """Returns what the function returned when it was executed (Ah, yes, the tautology)"""
         result = self.__runfunc()
+        if self.print:
+            [print(message) for message in result['output']]
         return result['result']
 
     @property
