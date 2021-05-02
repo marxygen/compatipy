@@ -32,10 +32,13 @@ All you need to do is to instantiate a **Compatible** class and pass in the modu
 What will happen? Does the code break? I hope not. In fact, this is the output:
 
 ```IDLE
+>>> This is the output
 >>> This is something I return
 ```
 
-Nice. So the code got executed even though it contains clearly Python-3-invalid `print` statement. But we also have something we printed out in the function that wasn't displayed anywhere. There is a special property for that:
+Nice. So the code got executed even though it contains clearly Python-3-invalid `print` statement.
+Note that we see not only what the function returned but also what it printed out. You can overwrite that by passing `print=False` when instantiating `Compatible`.<br>
+If we want to access what the function printed out separately, there is a property for that:
 
 ```Python
 func.output
