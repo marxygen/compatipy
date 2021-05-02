@@ -79,3 +79,11 @@ Output:
 ## Handling exceptions
 
 If some exception was raised during Python 2 script execution, if will be raised when you call this function. You can change this behavior by passing `raise_exceptions=False`
+
+## Passing arguments
+
+If you want to call a Python 2 function with some arguments, provide a **tuple** into `Compatible` class initializer:
+
+```Python
+func = Compatible('example.func', args=(1,2))
+```

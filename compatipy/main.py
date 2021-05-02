@@ -23,6 +23,7 @@ class Compatible:
         self.module, self.method = *definition.split('.')[:-1], definition.split('.')[-1]
         self.old_version = old_version
         self.command = command
+        self.args = args
         self.print = prnt
         self.raise_exceptions = raise_exceptions
 
@@ -74,7 +75,7 @@ class Compatible:
     def __runfunc(self):
         py2dir = os.path.join(os.path.dirname(__file__), 'py2.py')
         module_dir = os.path.join(self.path, self.module) + '.py'
-        result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method}')
+        result = self.__execute(f'{self.oldpy_command} {py2dir} {module_dir} {self.method} args={self.args}')
         try:
             result = eval(result)
             if result.get('exceptions') and self.raise_exceptions:

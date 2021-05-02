@@ -38,8 +38,14 @@ sys.stdout = STDOUTWriter
 old_stderr = sys.stderr
 sys.stderr = STDERRWriter
 
+argv = ''.join(sys.argv[3:5])
+args = None if argv == 'args=(None,)' else eval(argv.replace('args=', ''))
+
 try:
-    result = function.__dict__[method]()
+    if args:
+        result = function.__dict__[method](*args)
+    else:
+        result = function.__dict__[method]()
 except Exception as e:
     result = []
     exceptions.append(e)
